@@ -14,7 +14,7 @@ logger = logging.getLogger(__name__)
 class NewModel(LabelStudioMLBase):
 
     def __init__(self, **kwargs):
-        self.labels = ['SID', 'SIS', 'SR']
+        self.labels = ['label1', 'label2', 'label3']
         self.model = None
         self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
         self.model_path = os.path.join(os.path.dirname(__file__), 'models', 'my_model.pt')
