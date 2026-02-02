@@ -1,0 +1,39 @@
+services:
+  label-studio:
+    container_name: label-studio
+    image: heartexlabs/label-studio:latest
+    ports:
+      - "${LABEL_STUDIO_PORT}:8080"
+    environment:
+      - LABEL_STUDIO_LOCAL_FILES_SERVING_ENABLED=true
+      - LABEL_STUDIO_LOCAL_FILES_DOCUMENT_ROOT=/label-studio/files
+    volumes:
+      - ls-data:/label-studio/data
+      - ./data/files:/label-studio/files
+    restart: unless-stopped
+
+  ml-backend:
+    container_name: label-studio-backend
+    build:
+      context: .
+      args:
+        TEST_ENV: ${TEST_ENV:-}
+    ports:
+      - "${ML_BACKEND_PORT}:9090"
+    environment:
+      - LABEL_STUDIO_ML_BACKEND_V2=true
+      - LABEL_STUDIO_URL=http://label-studio:8080/
+      - LABEL_STUDIO_API_KEY=${LABEL_STUDIO_API_KEY}
+      - PYTHONUNBUFFERED=1
+      - LOG_LEVEL=${LOG_LEVEL}
+      - WORKERS=1
+      - THREADS=8
+      - PORT=9090
+    volumes:
+      - ./:/app
+    depends_on:
+      - label-studio
+    restart: unless-stopped
+
+volumes:
+  ls-data:
